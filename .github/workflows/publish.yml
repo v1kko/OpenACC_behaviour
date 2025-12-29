@@ -8,6 +8,7 @@ on:
 jobs:
   publish:
     name: Publish github pages
+    runs-on: ubuntu-latest
     steps:
       - name: Deploy MkDocs
         uses: mhausenblas/mkdocs-deploy-gh-pages@1.26
