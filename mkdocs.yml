@@ -1,1 +1,7 @@
-site_name: My Docs
+site_name: OpenACC Behaviour
+site_url: https://v1kko.github.io/OpenACC_behaviour
+site_author: Victor Azizi
+repo_url: https://github.com/v1kko/OpenACC_behaviour
+nav:
+  - Introduction: index.md
+  - 'Pointers in structs': pointers_structs.md

@@ -1,17 +1,12 @@
-# Welcome to MkDocs
+# OpenACC Behaviour
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+This site explores OpenACC pragmas in combination with valid but seldomly used Fortran statements and 
+different compilers.
+The aim of this site is to document this behaviour for various use cases and compilers, thus providing
+a knowledge database for those who need it. This site should allow Programmers to save time debugging OpenACC. It can also serve as a basis for compiler providers to "fix" or 
+implement other behaviour for certain cases, such that the same OpenACC pragmas execute more similarily for the different compilers.
 
-## Commands
+## Layout
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
+Every chapter describes a problem and how each compiler handles it
 
-## Project layout
-
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
