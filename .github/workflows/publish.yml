@@ -10,5 +10,8 @@ jobs:
     name: Publish github pages
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
       - name: Deploy MkDocs
-        uses: mhausenblas/mkdocs-deploy-gh-pages@1.26
+        uses: mhausenblas/mkdocs-deploy-gh-pages@master
