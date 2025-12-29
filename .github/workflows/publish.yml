@@ -1,0 +1,13 @@
+name: Github Pages
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish:
+    name: Publish github pages
+    steps:
+      - name: Deploy MkDocs
+        uses: mhausenblas/mkdocs-deploy-gh-pages@1.26
