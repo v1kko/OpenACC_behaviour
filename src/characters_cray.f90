@@ -7,7 +7,7 @@ contains
   subroutine write_message(message)
     !$acc routine
     implicit none
-    character(len=*), intent(in) :: message
+    character(len=12), intent(in) :: message
     write(*,*)message
   end subroutine
 end program

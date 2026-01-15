@@ -1,0 +1,1 @@
+nvfortran -Wall -acc=gpu -Mvect=levels:5 -Minline -Minfo=all characters_cray.f90
