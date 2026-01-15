@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://v1kko.github.io/OpenACC_behaviour/</loc>
+         <lastmod>2026-01-15</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://v1kko.github.io/OpenACC_behaviour/characters_cray/</loc>
+         <lastmod>2026-01-15</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://v1kko.github.io/OpenACC_behaviour/pointers_structs/</loc>
+         <lastmod>2026-01-15</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+</urlset>
