@@ -1,1 +1,2 @@
 nvfortran -Wall -acc=gpu -Mvect=levels:5 -Minline -Minfo=all characters_cray.f90
+gfortran -fopenacc -foffload=nvptx-none pointers_structs.f90

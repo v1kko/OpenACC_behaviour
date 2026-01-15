@@ -19,15 +19,28 @@ program main
 
   !$acc parallel loop
   do i=1,2 
-    res(i) = indirect%values(i)
-  enddo
-  write(*,*) "pointer values", res
-
-  !$acc parallel loop
-  do i=1,2 
     res(i) = val%values(i)
   enddo
   write(*,*) "direct values", res
+
+  write(*,*) "indirect enter data"
+  !$acc enter data copyin(indirect) 
+  !$acc enter data copyin(indirect%values) 
+  !$acc parallel loop
+  do i=1,2 
+    res(i) = indirect%values(i)
+  enddo
+  write(*,*) "pointer values enter data", res
+  !$acc exit data delete(indirect)
+  !$acc exit data delete(indirect%values)
+
+  
+
+  !$acc parallel loop
+  do i=1,2 
+    res(i) = indirect%values(i)
+  enddo
+  write(*,*) "pointer values", res
   
 end program
   
