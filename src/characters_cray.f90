@@ -6,7 +6,7 @@ program main
 
 contains
   subroutine write_message(message)
-    !$acc routine nohost seq
+    !$acc routine seq
     implicit none
     character(len=12), intent(in) :: message
     write(*,*)message
