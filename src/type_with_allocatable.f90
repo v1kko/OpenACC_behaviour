@@ -8,6 +8,7 @@ program main
   real, dimension(:) :: host_mem(2) = (/4,2/), res(2)
   integer :: i
   type(pointer_type) :: indirect
+  allocate(indirect%values(2))
 
   indirect%values = host_mem
 
