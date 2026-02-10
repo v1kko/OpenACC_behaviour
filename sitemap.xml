@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://v1kko.github.io/OpenACC_behaviour/</loc>
+         <lastmod>2026-02-10</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://v1kko.github.io/OpenACC_behaviour/characters/</loc>
+         <lastmod>2026-02-10</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://v1kko.github.io/OpenACC_behaviour/copyto_existing_Data/</loc>
+         <lastmod>2026-02-10</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://v1kko.github.io/OpenACC_behaviour/pointers_structs/</loc>
+         <lastmod>2026-02-10</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+</urlset>
