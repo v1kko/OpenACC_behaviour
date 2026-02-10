@@ -5,3 +5,4 @@ repo_url: https://github.com/v1kko/OpenACC_behaviour
 nav:
   - Introduction: index.md
   - 'Pointers in structs': pointers_structs.md
+  - 'Characters in host routines' : characters.md
