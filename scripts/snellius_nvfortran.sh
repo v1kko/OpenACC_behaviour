@@ -10,6 +10,8 @@ git clone https://github.com/v1kko/OpenACC_behaviour.git
 
 cd OpenACC_behaviour/src
 
+git pull
+
 export COMPILER=\"nvfortran -Wall -acc=gpu -Minfo=all\"
 export CASE=${CASE}
 
