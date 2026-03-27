@@ -71,7 +71,7 @@ program aliasing
     call sum1(val1)
     call sum2(val2)
     
-    if (val1 = 1000 .and. val2 = 2000) then
+    if (val1 == 1000 .and. val2 == 2000) then
       write(*,*) "Success, no aliasing"
     else
       write(*,*) "Fail, val1 and val2 are aliased:", val1, val2
