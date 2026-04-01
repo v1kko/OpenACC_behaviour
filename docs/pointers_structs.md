@@ -1,32 +1,121 @@
 # Type with allocatables
 
-Types with allocatables are handled differently by compilers when using OpenACC. 
+Types with allocatables are handled differently by compilers when using OpenACC. In C this would be equivalent to a struct with a pointer inside. According to the OpenACC specification it should not be possbile to write a type with allocatables to the gpu in one go. However, we noticed that it worked sometimes and thus we have listed the differences here
 
-OpenACC states: 
+???+ info "OpenACC 3.3 section 2.6.4"
 
-```quote
-When a data object is copied to device memory, the values are copied exactly. If the data is a data
-structure that includes a pointer, or is just a pointer, the pointer value copied to device memory
-will be the host pointer value. If the pointer target object is also allocated in or copied to device
-memory, the pointer itself needs to be updated with the device address of the target object before
-dereferencing the pointer in device memory
-```
+    ```quote
+    When a data object is copied to device memory, the values are copied exactly. If the data is a data
+    structure that includes a pointer, or is just a pointer, the pointer value copied to device memory
+    will be the host pointer value. If the pointer target object is also allocated in or copied to device
+    memory, the pointer itself needs to be updated with the device address of the target object before
+    dereferencing the pointer in device memory
+    ```
 
-Therefore it is should not be possbile to write a type with allocatables to the gpu in one go (according to the specification).
 
-However, Compilers each interpret this differently for different cases, thus we list some differences here:
+## Container with "declare create"
 
-## Combined with "declare create"
+??? note "Code"
 
-- Cray: compiler warning, runtime crash
-- Nvidia: no warning, runtime crash
+    ```fortran
+    program main
+      implicit none
+      type container_type
+          real, dimension(:), allocatable :: values
+      end type
+      real, dimension(:) :: host_mem(2) = (/4,2/), res(2)
+      integer :: i
 
-## Combined with "enter data"
+      type(container_type) :: container
+      !$acc declare create(container)
 
-- Cray: runtime crash
-- Nvidia: works
+      allocate(container%values(2))
+      container%values = host_mem
 
-## Combined with no data/declare statement, only parallel loop
-- Cray: no warning, runtime crash
-- Nvidia: works
+      write(*,*) "Checking if allocatable values are copied to device after declare create ..."
+      !$acc parallel loop 
+      do i=1,2 
+        res(i) = container%values(i)
+      enddo
+      write(*,*) "Success", res
+    end program
+    ```
 
+**Cray**
+
+Gives a compiler warning and crashes at runtime
+
+**Nvidia**
+
+Gives no warning, crashes at runtime
+
+## Container with "enter data"
+
+??? note "Code"
+
+    ```fortran
+    program main
+      implicit none
+      type container_type
+          real, dimension(:), allocatable :: values
+      end type
+      real, dimension(:) :: host_mem(2) = (/4,2/), res(2)
+      integer :: i
+
+      type(container_type) :: container
+      !$acc enter data create(container)
+
+      allocate(container%values(2))
+      container%values = host_mem
+
+      write(*,*) "Checking if allocatable values are copied to device after enter data create ..."
+      !$acc parallel loop 
+      do i=1,2 
+        res(i) = container%values(i)
+      enddo
+      write(*,*) "Success", res
+    end program
+    ```
+
+**Cray** 
+
+Crashes at runtime
+
+**Nvidia**
+
+Code works and gives the correct result
+
+## Container with no data/declare statement
+
+??? note "Code"
+
+    ``` fortran
+    program main
+      implicit none
+      type pointer_type
+          real, dimension(:), allocatable :: values
+      end type
+      real, dimension(:) :: host_mem(2) = (/4,2/), res(2)
+      integer :: i
+      type(pointer_type) :: indirect
+      allocate(indirect%values(2))
+
+      indirect%values = host_mem
+
+      write(*,*) "Checking if allocatable values are copied to device with !$acc parallel loop ..."
+      !$acc parallel loop
+      do i=1,2 
+        res(i) = indirect%values(i)
+      enddo
+      write(*,*) "Success", res
+
+    end program
+    ```
+
+**Cray**
+
+Does not give a warning, crashes at runtime
+
+**Nvidia**
+
+Code works and gives the correct result
