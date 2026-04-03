@@ -10,7 +10,7 @@ contains
     implicit none
     character(len=12), intent(in) :: message
     character(len=14) :: new_message
-    new_message = trim(message) // "!"
+    new_message = message(1:7) // "!"
     write(*,*)new_message
   end subroutine
 end program
