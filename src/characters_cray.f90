@@ -9,6 +9,8 @@ contains
     !$acc routine seq
     implicit none
     character(len=12), intent(in) :: message
+    character(len=12), intent(in) :: new_message
+    new_message = message + 1
     write(*,*)message
   end subroutine
 end program
