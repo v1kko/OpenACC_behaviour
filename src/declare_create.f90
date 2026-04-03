@@ -1,5 +1,4 @@
 program main
-  use openacc
   implicit none
   type container_type
       real, dimension(:), allocatable :: values

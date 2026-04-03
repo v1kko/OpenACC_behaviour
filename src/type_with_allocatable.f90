@@ -1,10 +1,8 @@
 program main
-
   implicit none
   type pointer_type
       real, dimension(:), allocatable :: values
   end type
-
   real, dimension(:) :: host_mem(2) = (/4,2/), res(2)
   integer :: i
   type(pointer_type) :: indirect
