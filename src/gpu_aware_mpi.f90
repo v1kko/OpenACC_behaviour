@@ -11,6 +11,7 @@ program gpu_aware_mpi
   call MPI_Comm_size(MPI_COMM_WORLD, nprocs, ierr)
   call MPI_Comm_rank(MPI_COMM_WORLD, rank, ierr)
 
+  call acc_set_device_num(rank, acc_get_device_type())
   gpu_num = acc_get_device_num(acc_get_device_type())
   write(*,*) "Rank", rank, ": GPU", gpu_num
 
