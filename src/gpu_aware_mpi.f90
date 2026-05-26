@@ -27,6 +27,7 @@ program gpu_aware_mpi
 
   allocate(send_buf(n,n), recv_buf(n))
 
+  !$acc enter data create(recv_buf)
   !$acc parallel loop collapse(2) present(send_buf, recv_buf)
   do i = 1, n
     do j = 1, n
@@ -35,7 +36,6 @@ program gpu_aware_mpi
     recv_buf(i) = -1
   end do
 
-  !$acc enter data create(recv_buf)
   !$acc host_data use_device(send_buf, recv_buf)
   call MPI_Sendrecv(send_buf(:,6), n, MPI_INTEGER, partner, 0, &
                     recv_buf, n, MPI_INTEGER, partner, 0, &
