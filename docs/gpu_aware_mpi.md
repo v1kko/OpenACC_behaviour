@@ -29,3 +29,53 @@ Launching with anything other than 2 ranks is a hard error.
 | Compiler | Version | Result | Notes |
 |----------|---------|--------|-------|
 |          |         |        |       |
+
+## Device-only buffer variant (`acc_malloc` + `deviceptr`)
+
+A second variant skips the host-side arrays entirely: `send_buf` and `recv_buf`
+are allocated directly on the device with `acc_malloc`, associated with Fortran
+pointers via `c_f_pointer`, and used inside compute regions through the
+`deviceptr` clause. Because the Fortran descriptor's data address is already
+the device pointer, the `MPI_Sendrecv` call no longer needs to be wrapped in
+`!$acc host_data use_device(...)` — GPU-aware MPI receives the device address
+straight from the buffer argument.
+
+The OpenACC 3.x spec declares `acc_malloc` as `type(c_ptr) function
+acc_malloc(int(c_size_t))` and `acc_free` as taking a `type(c_ptr)`. NVHPC's
+`openacc` module deviates and uses `type(c_devptr)` (from CUDA Fortran) for
+both, so a plain `c_ptr` call fails to resolve:
+
+```text
+NVFORTRAN-S-0148-Reference to TYPE(C_PTR) expression required
+NVFORTRAN-S-0155-Could not resolve generic procedure acc_free
+```
+
+To stay portable across NVHPC and Cray, this variant bypasses the `openacc`
+module's generics and declares its own `bind(C, name='acc_malloc')` /
+`bind(C, name='acc_free')` interfaces (named `acc_malloc_c` / `acc_free_c`)
+that match the spec's `c_ptr` signature. Both compilers expose those C
+symbols from the runtime library.
+
+### NVHPC vs. Cray: `deviceptr` requires a dummy argument
+
+This is where the two compilers diverge:
+
+- **NVHPC (`nvfortran`)** accepts `deviceptr(send_buf, recv_buf)` even when the
+  pointers are *local* variables in the same scope as the directive. The
+  device-pointer-typed Fortran pointer in the main program is enough.
+- **Cray (`ftn`)** enforces the OpenACC spec strictly. Each variable named in
+  a `deviceptr` clause must be a **dummy argument** of the enclosing
+  subprogram. Using it on a local pointer fails at compile time:
+
+    ```text
+    ftn-1238 ftn: ERROR GPU_AWARE_MPI, File = gpu_aware_mpi.f90, Line = 36, Column = 33
+      "SEND_BUF" is specified with the DEVICEPTR clause.  It must be a dummy argument.
+    ```
+
+The portable workaround is to move every compute region that uses the
+device pointer into a subroutine and pass the buffer in as a dummy argument.
+`src/gpu_aware_mpi_subroutines.f90` demonstrates this: `init_buffers` and
+`count_mismatches` are contained subroutines that take `send_buf` / `recv_buf`
+as explicit-shape arguments, and the `deviceptr` clauses live inside those
+subroutines. The `acc_malloc`/`acc_free` calls and the `MPI_Sendrecv` stay in
+the main program. This version compiles on both Cray and NVHPC.

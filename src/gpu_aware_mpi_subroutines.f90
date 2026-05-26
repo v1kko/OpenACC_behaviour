@@ -3,6 +3,20 @@ program gpu_aware_mpi_subroutines
   use mpi_f08
   use iso_c_binding
   implicit none
+
+  interface
+    function acc_malloc_c(bytes) bind(C, name='acc_malloc') result(ptr)
+      import :: c_size_t, c_ptr
+      integer(c_size_t), value :: bytes
+      type(c_ptr) :: ptr
+    end function
+
+    subroutine acc_free_c(ptr) bind(C, name='acc_free')
+      import :: c_ptr
+      type(c_ptr), value :: ptr
+    end subroutine
+  end interface
+
   integer, parameter :: n = 128
   integer :: ierr, rank, nprocs, partner, mismatches, gpu_num
   integer :: sentinel
@@ -28,8 +42,8 @@ program gpu_aware_mpi_subroutines
   partner = 1 - rank
 
   nbytes = int(n, c_size_t) * c_sizeof(sentinel)
-  send_cptr = acc_malloc(nbytes)
-  recv_cptr = acc_malloc(nbytes)
+  send_cptr = acc_malloc_c(nbytes)
+  recv_cptr = acc_malloc_c(nbytes)
   call c_f_pointer(send_cptr, send_buf, [n])
   call c_f_pointer(recv_cptr, recv_buf, [n])
 
@@ -49,8 +63,8 @@ program gpu_aware_mpi_subroutines
 
   if (rank == 0) write(*,*) "GPU-aware MPI: OK"
 
-  call acc_free(send_cptr)
-  call acc_free(recv_cptr)
+  call acc_free_c(send_cptr)
+  call acc_free_c(recv_cptr)
 
   call MPI_Finalize(ierr)
 
