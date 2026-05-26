@@ -29,29 +29,3 @@ Launching with anything other than 2 ranks is a hard error.
 | Compiler | Version | Result | Notes |
 |----------|---------|--------|-------|
 |          |         |        |       |
-
-## Device-only buffer variant (`acc_malloc` + `deviceptr`)
-
-A second variant skips the host-side arrays entirely: `send_buf` and `recv_buf`
-are allocated directly on the device with `acc_malloc`, associated with Fortran
-pointers via `c_f_pointer`, and used inside compute regions through the
-`deviceptr` clause. Because the Fortran descriptor's data address is already
-the device pointer, the `MPI_Sendrecv` call no longer needs to be wrapped in
-`!$acc host_data use_device(...)` — GPU-aware MPI receives the device address
-straight from the buffer argument.
-
-The OpenACC 3.x spec declares `acc_malloc` as `type(c_ptr) function
-acc_malloc(int(c_size_t))` and `acc_free` as taking a `type(c_ptr)`. NVHPC's
-`openacc` module deviates and uses `type(c_devptr)` (from CUDA Fortran) for
-both, so a plain `c_ptr` call fails to resolve:
-
-```text
-NVFORTRAN-S-0148-Reference to TYPE(C_PTR) expression required
-NVFORTRAN-S-0155-Could not resolve generic procedure acc_free
-```
-
-To stay portable across NVHPC and Cray, this variant bypasses the `openacc`
-module's generics and declares its own `bind(C, name='acc_malloc')` /
-`bind(C, name='acc_free')` interfaces (named `acc_malloc_c` / `acc_free_c`)
-that match the spec's `c_ptr` signature. Both compilers expose those C
-symbols from the runtime library.
