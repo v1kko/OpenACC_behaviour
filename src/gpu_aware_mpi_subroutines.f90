@@ -46,8 +46,7 @@ program gpu_aware_mpi_subroutines
 
   if (rank == 0) write(*,*) "GPU-aware MPI: OK"
 
-  call acc_free(send_buf)
-  call acc_free(recv_buf)
+  deallocate(send_buf, recv_buf)
 
   call MPI_Finalize(ierr)
 
