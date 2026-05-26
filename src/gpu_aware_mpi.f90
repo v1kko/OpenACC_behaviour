@@ -5,7 +5,7 @@ program gpu_aware_mpi
   integer, parameter :: n = 128
   integer :: ierr, rank, nprocs, partner, i, mismatches, expected
   integer :: send_buf(n), recv_buf(n)
-  integer :: status(MPI_STATUS_SIZE)
+  type(MPI_Status) :: status
 
   call MPI_Init(ierr)
   call MPI_Comm_size(MPI_COMM_WORLD, nprocs, ierr)
