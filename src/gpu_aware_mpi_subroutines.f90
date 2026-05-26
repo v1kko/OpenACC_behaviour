@@ -1,28 +1,12 @@
 program gpu_aware_mpi_subroutines
   use openacc
   use mpi_f08
-  use iso_c_binding
   implicit none
-
-  interface
-    function acc_malloc_c(bytes) bind(C, name='acc_malloc') result(ptr)
-      import :: c_size_t, c_ptr
-      integer(c_size_t), value :: bytes
-      type(c_ptr) :: ptr
-    end function
-
-    subroutine acc_free_c(ptr) bind(C, name='acc_free')
-      import :: c_ptr
-      type(c_ptr), value :: ptr
-    end subroutine
-  end interface
 
   integer, parameter :: n = 128
   integer :: ierr, rank, nprocs, partner, mismatches, gpu_num
-  integer :: sentinel
-  integer(c_size_t) :: nbytes
-  type(c_ptr) :: send_cptr, recv_cptr
-  integer, pointer :: send_buf(:), recv_buf(:)
+  integer, allocatable, dimension(:) :: send_buf, recv_buf
+  !$acc declare device_resident(send_buf, recv_buf)
   type(MPI_Status) :: status
 
   call MPI_Init(ierr)
@@ -41,17 +25,16 @@ program gpu_aware_mpi_subroutines
 
   partner = 1 - rank
 
-  nbytes = int(n, c_size_t) * c_sizeof(sentinel)
-  send_cptr = acc_malloc_c(nbytes)
-  recv_cptr = acc_malloc_c(nbytes)
-  call c_f_pointer(send_cptr, send_buf, [n])
-  call c_f_pointer(recv_cptr, recv_buf, [n])
+  allocate(send_buf(n))
+  allocate(recv_buf(n))
 
   call init_buffers(send_buf, recv_buf, n, rank)
 
+  !$acc host_data use_device(send_buf, recv_buf)
   call MPI_Sendrecv(send_buf, n, MPI_INTEGER, partner, 0, &
                     recv_buf, n, MPI_INTEGER, partner, 0, &
                     MPI_COMM_WORLD, status, ierr)
+  !$acc end host_data
 
   call count_mismatches(recv_buf, n, partner, mismatches)
 
@@ -63,8 +46,8 @@ program gpu_aware_mpi_subroutines
 
   if (rank == 0) write(*,*) "GPU-aware MPI: OK"
 
-  call acc_free_c(send_cptr)
-  call acc_free_c(recv_cptr)
+  call acc_free(send_buf)
+  call acc_free(recv_buf)
 
   call MPI_Finalize(ierr)
 
@@ -74,7 +57,7 @@ contains
     integer, intent(in) :: n, rank
     integer :: send_buf(n), recv_buf(n)
     integer :: i
-    !$acc parallel loop deviceptr(send_buf, recv_buf)
+    !$acc parallel loop present(send_buf, recv_buf)
     do i = 1, n
       send_buf(i) = i + rank*1000
       recv_buf(i) = 0
@@ -87,7 +70,7 @@ contains
     integer, intent(out) :: mismatches
     integer :: i, expected
     mismatches = 0
-    !$acc parallel loop deviceptr(recv_buf) reduction(+:mismatches) private(expected)
+    !$acc parallel loop present(recv_buf) reduction(+:mismatches) private(expected)
     do i = 1, n
       expected = i + partner*1000
       if (recv_buf(i) /= expected) mismatches = mismatches + 1
