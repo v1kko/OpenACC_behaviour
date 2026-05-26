@@ -2,21 +2,25 @@
 
 Suppose you have two (or more) modules, in which you have variables that have a similar name and that should be used on the device, should these two variable point to the same memory location?
 
-```fortran
-module one
-  integer :: a(:)
-  !$acc declare create(a)
-end module
-module two
-  integer :: a(:)
-  !$acc declare create(a)
-end module
-```
+???+ info "Code"
+
+    ```fortran
+    module one
+      integer :: a(:)
+      !$acc declare create(a)
+    end module
+    module two
+      integer :: a(:)
+      !$acc declare create(a)
+    end module
+    ```
 To test this we have written the following program, which does a simple reduction for both variables.
 
-```fortran
---8<-- "src/module_var_aliasing.f90"
-```
+??? info "Test program"
+
+    ```fortran
+    --8<-- "src/module_var_aliasing.f90"
+    ```
 
 The OpenACC specification is ambiguous on this and states in section 2.13 (OpenACC 3.3):
 
@@ -31,7 +35,7 @@ The OpenACC specification is ambiguous on this and states in section 2.13 (OpenA
 
 **Cray compiler**
 
-According to HPE (Cray compiler) it is allowed according the specification to let these variables point to the same location in device memory. Therefore our example program does not succeed
+According to HPE (Cray compiler) it is allowed according the specification to let these variables point to the same location in device memory. Therefore our example program prints the "wrong" value.
 
 **Nvidia**
 

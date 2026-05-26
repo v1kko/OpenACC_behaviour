@@ -11,6 +11,8 @@ git clone https://github.com/v1kko/OpenACC_behaviour.git
 
 cd OpenACC_behaviour/src
 
+git pull
+
 export COMPILER=\"ftn -g -hacc\"
 export CASE=${CASE}
 export CRAY_ACC_DEBUG=3
@@ -18,7 +20,7 @@ export CRAY_ACC_DEBUG=3
 make clean
 make
 
-export SUBMIT_COMMAND=\"srun -t 1:00 -p standard-g --gres=gpu:1 --ntasks 1 --account project_465001595\"
+export SUBMIT_COMMAND=\"srun -t 1:00 -p standard-g --gres=gpu:1 --ntasks 1 --account project_465002836\"
 
 make run
 
