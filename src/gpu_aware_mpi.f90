@@ -3,13 +3,16 @@ program gpu_aware_mpi
   use mpi_f08
   implicit none
   integer, parameter :: n = 128
-  integer :: ierr, rank, nprocs, partner, i, mismatches, expected
+  integer :: ierr, rank, nprocs, partner, i, mismatches, expected, gpu_num
   integer :: send_buf(n), recv_buf(n)
   type(MPI_Status) :: status
 
   call MPI_Init(ierr)
   call MPI_Comm_size(MPI_COMM_WORLD, nprocs, ierr)
   call MPI_Comm_rank(MPI_COMM_WORLD, rank, ierr)
+
+  gpu_num = acc_get_device_num(acc_get_device_type())
+  write(*,*) "Rank", rank, ": GPU", gpu_num
 
   if (nprocs /= 2) then
     if (rank == 0) write(*,*) "GPU-aware MPI probe: needs exactly 2 ranks, got", nprocs
