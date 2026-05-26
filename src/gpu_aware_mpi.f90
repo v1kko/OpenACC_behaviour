@@ -45,7 +45,7 @@ program gpu_aware_mpi
 
   mismatches = 0
   do i = 1, n
-    expected = 6*128 + i + partner*1000
+    expected = 6*128 + i + partner*17000
     if (recv_buf(i) /= expected) then
       write(*,*) "Mismatch: Rank: ", rank, i, recv_buf(i), expected
       mismatches = mismatches + 1
