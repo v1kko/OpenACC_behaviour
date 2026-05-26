@@ -12,6 +12,7 @@
       devShell.x86_64-linux =
         mkShell { buildInputs = [
           pythonpkgs.mkdocs
+          pythonpkgs.mkdocs-material
           gfortran
           gh
         ];
