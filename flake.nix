@@ -1,8 +1,7 @@
 {
   inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
-  inputs.localpkgs.url = "/home/vikko/local_projects/nixos/";
 
-  outputs = { self, nixpkgs, localpkgs, ... }:
+  outputs = { self, nixpkgs, ... }:
     let
       pkgs = import nixpkgs { system = "x86_64-linux"; config.allowUnfree = true; };
       pythonpkgs = pkgs.python313Packages;
