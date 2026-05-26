@@ -1,6 +1,6 @@
 program gpu_aware_mpi
   use openacc
-  use mpi
+  use mpi_f08
   implicit none
   integer, parameter :: n = 128
   integer :: ierr, rank, nprocs, partner, i, mismatches, expected
