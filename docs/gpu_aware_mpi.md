@@ -55,27 +55,3 @@ module's generics and declares its own `bind(C, name='acc_malloc')` /
 `bind(C, name='acc_free')` interfaces (named `acc_malloc_c` / `acc_free_c`)
 that match the spec's `c_ptr` signature. Both compilers expose those C
 symbols from the runtime library.
-
-### NVHPC vs. Cray: `deviceptr` requires a dummy argument
-
-This is where the two compilers diverge:
-
-- **NVHPC (`nvfortran`)** accepts `deviceptr(send_buf, recv_buf)` even when the
-  pointers are *local* variables in the same scope as the directive. The
-  device-pointer-typed Fortran pointer in the main program is enough.
-- **Cray (`ftn`)** enforces the OpenACC spec strictly. Each variable named in
-  a `deviceptr` clause must be a **dummy argument** of the enclosing
-  subprogram. Using it on a local pointer fails at compile time:
-
-    ```text
-    ftn-1238 ftn: ERROR GPU_AWARE_MPI, File = gpu_aware_mpi.f90, Line = 36, Column = 33
-      "SEND_BUF" is specified with the DEVICEPTR clause.  It must be a dummy argument.
-    ```
-
-The portable workaround is to move every compute region that uses the
-device pointer into a subroutine and pass the buffer in as a dummy argument.
-`src/gpu_aware_mpi_subroutines.f90` demonstrates this: `init_buffers` and
-`count_mismatches` are contained subroutines that take `send_buf` / `recv_buf`
-as explicit-shape arguments, and the `deviceptr` clauses live inside those
-subroutines. The `acc_malloc`/`acc_free` calls and the `MPI_Sendrecv` stay in
-the main program. This version compiles on both Cray and NVHPC.
