@@ -39,11 +39,13 @@ program gpu_aware_mpi
   end do
 
   send_buf_slice => send_buf(:,6)
+  !$acc enter data attach(send_buf_slice)
   !$acc host_data use_device(send_buf_slice, recv_buf)
   call MPI_Sendrecv(send_buf_slice, n, MPI_INTEGER, partner, 0, &
                     recv_buf, n, MPI_INTEGER, partner, 0, &
                     MPI_COMM_WORLD, status, ierr)
   !$acc end host_data
+  !$acc exit data detach(send_buf_slice)
   !$acc exit data copyout(recv_buf)
 
   mismatches = 0
