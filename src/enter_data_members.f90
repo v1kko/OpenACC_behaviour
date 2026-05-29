@@ -14,6 +14,7 @@ program main
   allocate(container%values(2))
   !$acc enter data create(container%values)
   container%values = host_mem
+  !$acc update device(container%values)
 
   write(*,*) "Checking if allocatable values are copied to device after enter data create ..."
   !$acc parallel loop 
