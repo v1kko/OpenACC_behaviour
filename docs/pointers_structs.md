@@ -24,8 +24,8 @@ In the tables below, the **Correctness** column states whether each compiler's o
 
 | Compiler | Result | Correctness | Notes |
 |----------|--------|-------------|-------|
-| Cray | Crash | Per spec — copying the container does not attach `values` | Compiler warning (`Variable "(?)" is used before it is defined`); memory access fault at runtime. |
-| Nvidia | Crash | Per spec — copying the container does not attach `values` | No warning; `CUDA_ERROR_ILLEGAL_ADDRESS` at runtime. |
+| Cray Fortran 19.0.0 | Crash | Per spec — copying the container does not attach `values` | Compiler warning (`Variable "(?)" is used before it is defined`); memory access fault at runtime. |
+| nvfortran 25.3-0 | Crash | Per spec — copying the container does not attach `values` | No warning; `CUDA_ERROR_ILLEGAL_ADDRESS` at runtime. |
 
 ## Container with "enter data"
 
@@ -37,8 +37,8 @@ In the tables below, the **Correctness** column states whether each compiler's o
 
 | Compiler | Result | Correctness | Notes |
 |----------|--------|-------------|-------|
-| Cray | Crash | Per spec — `values` is never attached | Memory access fault at runtime. |
-| Nvidia | OK | Not per spec — relies on a non-portable automatic deep copy | Prints `Success 4.000000 2.000000`. |
+| Cray Fortran 19.0.0 | Crash | Per spec — `values` is never attached | Memory access fault at runtime. |
+| nvfortran 25.3-0 | OK | Not per spec — relies on a non-portable automatic deep copy | Prints `Success 4.000000 2.000000`. |
 
 ??? note "Code with module variable"
 
@@ -48,8 +48,8 @@ In the tables below, the **Correctness** column states whether each compiler's o
 
 | Compiler | Result | Correctness | Notes |
 |----------|--------|-------------|-------|
-| Cray | Crash | Per spec — `values` is never attached | Memory access fault at runtime. |
-| Nvidia | Wrong result | Not per spec — relies on a non-portable automatic deep copy | Prints `Success 4.000000 0.000000`; the second element should be `2.0`. The module variable case silently produces an incorrect value. |
+| Cray Fortran 19.0.0 | Crash | Per spec — `values` is never attached | Memory access fault at runtime. |
+| nvfortran 25.3-0 | Wrong result | Not per spec — relies on a non-portable automatic deep copy | Prints `Success 4.000000 0.000000`; the second element should be `2.0`. The module variable case silently produces an incorrect value. |
 
 ??? note "Code with enter data for member variable"
 
@@ -59,8 +59,8 @@ In the tables below, the **Correctness** column states whether each compiler's o
 
 | Compiler | Result | Correctness | Notes |
 |----------|--------|-------------|-------|
-| Cray | OK | Per spec — `values` is allocated, explicitly attached, and copied with `update device` | Prints `Success 4. 2.` (correct). |
-| Nvidia | OK | Per spec — `values` is allocated, explicitly attached, and copied with `update device` | Prints `Success 4.000000 2.000000` (correct). |
+| Cray Fortran 19.0.0 | OK | Per spec — `values` is allocated, explicitly attached, and copied with `update device` | Prints `Success 4. 2.` (correct). |
+| nvfortran 25.3-0 | OK | Per spec — `values` is allocated, explicitly attached, and copied with `update device` | Prints `Success 4.000000 2.000000` (correct). |
 
 ## Container with no data/declare statement
 
@@ -72,5 +72,5 @@ In the tables below, the **Correctness** column states whether each compiler's o
 
 | Compiler | Result | Correctness | Notes |
 |----------|--------|-------------|-------|
-| Cray | Crash | Per spec — `values` is never attached | No warning at compile time; memory access fault at runtime. |
-| Nvidia | OK | Not per spec — relies on a non-portable automatic deep copy | Prints `Success 4.000000 2.000000`. |
+| Cray Fortran 19.0.0 | Crash | Per spec — `values` is never attached | No warning at compile time; memory access fault at runtime. |
+| nvfortran 25.3-0 | OK | Not per spec — relies on a non-portable automatic deep copy | Prints `Success 4.000000 2.000000`. |

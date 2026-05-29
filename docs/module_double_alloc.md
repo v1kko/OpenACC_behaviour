@@ -33,12 +33,9 @@ The OpenACC specification is ambiguous on this and states in section 2.13 (OpenA
 
 ## Compiler behaviour
 
-**Cray compiler**
-
-According to HPE (Cray compiler) it is allowed according the specification to let these variables point to the same location in device memory. Therefore our example program prints the "wrong" value.
-
-**Nvidia**
-
-Nvidia treats these variables as separate in device memory. Therefore our example program succeeds.
+| Compiler | Result | Correctness | Notes |
+|----------|--------|-------------|-------|
+| Cray Fortran 19.0.0 | Wrong value | Spec ambiguous | Per HPE, the spec permits both variables to share one device location, so the reduction prints the "wrong" value. |
+| nvfortran 25.3-0 | OK | Spec ambiguous | Treats the variables as separate device allocations, so the program succeeds. |
 
 
