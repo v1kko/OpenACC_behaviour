@@ -5,8 +5,10 @@ program gpu_aware_mpi
 
   integer, parameter :: n = 128
   integer :: ierr, rank, nprocs, partner, i, j, mismatches, expected, gpu_num
-  integer, allocatable :: send_buf(:,:), recv_buf(:)
+  integer, allocatable, target :: send_buf(:,:), recv_buf(:)
   !$acc declare device_resident(send_buf)
+  integer, pointer, dimension(:) :: send_buf_slice
+  !$acc declare device_resident(send_buf_slice)
   type(MPI_Status) :: status
 
   call MPI_Init(ierr)
@@ -36,8 +38,11 @@ program gpu_aware_mpi
     recv_buf(i) = -1
   end do
 
-  !$acc host_data use_device(send_buf, recv_buf)
-  call MPI_Sendrecv(send_buf(:,6), n, MPI_INTEGER, partner, 0, &
+  !acc serial
+  send_buf_slice => send_buf(:,6)
+  !acc end serial
+  !$acc host_data use_device(send_buf_slice, recv_buf)
+  call MPI_Sendrecv(send_buf_slice, n, MPI_INTEGER, partner, 0, &
                     recv_buf, n, MPI_INTEGER, partner, 0, &
                     MPI_COMM_WORLD, status, ierr)
   !$acc end host_data

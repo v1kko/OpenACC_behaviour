@@ -5,10 +5,8 @@ program gpu_aware_mpi
 
   integer, parameter :: n = 128
   integer :: ierr, rank, nprocs, partner, i, j, mismatches, expected, gpu_num
-  integer, allocatable, target :: send_buf(:,:), recv_buf(:)
+  integer, allocatable :: send_buf(:), recv_buf(:)
   !$acc declare device_resident(send_buf)
-  integer, pointer, dimension(:) :: send_buf_slice
-  !$acc declare device_resident(send_buf_slice)
   type(MPI_Status) :: status
 
   call MPI_Init(ierr)
@@ -32,17 +30,12 @@ program gpu_aware_mpi
   !$acc enter data create(recv_buf)
   !$acc parallel loop collapse(2) present(send_buf, recv_buf)
   do i = 1, n
-    do j = 1, n
-      send_buf(i,j) = i+j*128+rank*17000 
-    end do
+    send_buf(i) = i+rank*17000 
     recv_buf(i) = -1
   end do
 
-  !acc serial
-  send_buf_slice => send_buf(:,6)
-  !acc end serial
-  !$acc host_data use_device(send_buf_slice, recv_buf)
-  call MPI_Sendrecv(send_buf_slice, n, MPI_INTEGER, partner, 0, &
+  !$acc host_data use_device(send_buf, recv_buf)
+  call MPI_Sendrecv(send_buf, n, MPI_INTEGER, partner, 0, &
                     recv_buf, n, MPI_INTEGER, partner, 0, &
                     MPI_COMM_WORLD, status, ierr)
   !$acc end host_data
@@ -50,7 +43,7 @@ program gpu_aware_mpi
 
   mismatches = 0
   do i = 1, n
-    expected = 6*128 + i + partner*17000
+    expected = i + partner*17000
     if (recv_buf(i) /= expected) then
       write(*,*) "Mismatch: Rank: ", rank, i, recv_buf(i), expected
       mismatches = mismatches + 1
