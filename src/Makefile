@@ -2,6 +2,7 @@ SRC_FILES := $(wildcard *.f90)
 CASE ?= .
 COMPILER ?= ftn
 SUBMIT_COMMAND ?=
+MPI_SUBMIT_COMMAND ?=
 EXE_FILES := $(patsubst %.f90,$(CASE)/%,$(SRC_FILES))
 RUN_FILES := $(patsubst %.f90,$(CASE)/%.run,$(SRC_FILES))
 
