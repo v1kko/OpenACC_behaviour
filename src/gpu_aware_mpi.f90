@@ -25,10 +25,10 @@ program gpu_aware_mpi
 
   partner = 1 - rank
 
-  allocate(send_buf(n,n), recv_buf(n))
+  allocate(send_buf(n), recv_buf(n))
 
   !$acc enter data create(recv_buf)
-  !$acc parallel loop collapse(2) present(send_buf, recv_buf)
+  !$acc parallel loop present(send_buf, recv_buf)
   do i = 1, n
     send_buf(i) = i+rank*17000 
     recv_buf(i) = -1
