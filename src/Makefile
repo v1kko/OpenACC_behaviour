@@ -17,5 +17,11 @@ $(CASE)/%:%.f90 | $(CASE)
 $(CASE)/%.run:$(CASE)/%
 	-$(SUBMIT_COMMAND) ./$^ 2>&1 | tee $^.run_out
 
+$(CASE)/gpu_aware_mpi.run:$(CASE)/gpu_aware_mpi
+	-$(MPI_SUBMIT_COMMAND) ./$^ 2>&1 | tee $^.run_out
+
+$(CASE)/gpu_aware_mpi_slicing.run:$(CASE)/gpu_aware_mpi_slicing
+	-$(MPI_SUBMIT_COMMAND) ./$^ 2>&1 | tee $^.run_out
+
 clean:
 	rm $(EXE_FILES)
