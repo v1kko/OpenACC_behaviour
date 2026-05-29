@@ -38,8 +38,8 @@ differences between the compilers, we tested everything with the following progr
 
 | Compiler | Result | Correctness | Notes |
 |----------|--------|-------------|-------|
-| Cray Fortran 19.0.0 | Compile error | Not covered by spec | Characters are not supported at all in device subroutines; the `ftn-7066` error is shown below. |
-| nvfortran 25.3-0 | OK | Not covered by spec | Compiles, runs and prints the message. |
+| Cray Fortran 19.0.0 | ❌ Compile error | Not covered by spec | Characters are not supported at all in device subroutines; the `ftn-7066` error is shown below. |
+| nvfortran 25.3-0 | ✅ OK | Not covered by spec | Compiles, runs and prints the message. |
 
 The Cray compile error:
 
