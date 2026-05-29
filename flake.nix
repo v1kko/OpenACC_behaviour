@@ -12,7 +12,9 @@
       devShell.x86_64-linux =
         mkShell { buildInputs = [
           pythonpkgs.mkdocs
+          pythonpkgs.mkdocs-material
           gfortran
+          openmpi
           gh
         ];
         pythonWithPkgs = mypython.withPackages (pythonPkgs: with pythonPkgs; [
