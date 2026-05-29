@@ -32,4 +32,4 @@ Slicing is an important feature, as it can avoid an unnecessary memcopy before t
 | Compiler | Version | Result | Notes |
 |----------|---------|--------|-------|
 | Cray Fortran (`ftn`) | LUMI/25.03 (`MPICH_GPU_SUPPORT_ENABLED=1`) | OK | Sliced (non-contiguous) buffer is transferred correctly. |
-| NVHPC `nvfortran` | 25.3 (CUDA 12.8, OpenMPI 5.0.7) | FAIL | Data mismatch on all 128 elements; the program hits `ERROR STOP GPU-aware MPI: data mismatch`. |
+| NVHPC `nvfortran` | 25.3 (CUDA 12.8, OpenMPI 5.0.7) | FAIL | Data mismatch on all 128 elements. |
