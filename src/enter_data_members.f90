@@ -10,9 +10,9 @@ program main
 
   type(container_type) :: container
   !$acc enter data create(container)
-  !$acc enter data create(container%values)
 
   allocate(container%values(2))
+  !$acc enter data create(container%values)
   container%values = host_mem
 
   write(*,*) "Checking if allocatable values are copied to device after enter data create ..."

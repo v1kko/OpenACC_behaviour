@@ -12,171 +12,65 @@ Types with allocatables are handled differently by compilers when using OpenACC.
     dereferencing the pointer in device memory
     ```
 
+In the tables below, the **Correctness** column states whether each compiler's observed behaviour conforms to the OpenACC specification. Because copying a container does not attach its allocatable component, the data is not guaranteed on the device unless `container%values` is explicitly attached. Only the example that does so is expected to work; elsewhere a "correct" output relies on a non-portable automatic deep copy rather than on behaviour the specification mandates.
 
 ## Container with "declare create"
 
 ??? note "Code"
 
     ```fortran
-    program main
-      implicit none
-      type container_type
-          real, dimension(:), allocatable :: values
-      end type
-      real, dimension(:) :: host_mem(2) = (/4,2/), res(2)
-      integer :: i
-
-      type(container_type) :: container
-      !$acc declare create(container)
-
-      allocate(container%values(2))
-      container%values = host_mem
-
-      write(*,*) "Checking if allocatable values are copied to device after declare create ..."
-      !$acc parallel loop 
-      do i=1,2 
-        res(i) = container%values(i)
-      enddo
-      write(*,*) "Success", res
-    end program
+    --8<-- "src/declare_create.f90"
     ```
 
-| Compiler | Result | Notes |
-|----------|--------|-------|
-| Cray | Crash | Compiler warning (`Variable "(?)" is used before it is defined`); memory access fault at runtime. |
-| Nvidia | Crash | No warning; `CUDA_ERROR_ILLEGAL_ADDRESS` at runtime. |
+| Compiler | Result | Correctness | Notes |
+|----------|--------|-------------|-------|
+| Cray | Crash | Per spec — copying the container does not attach `values` | Compiler warning (`Variable "(?)" is used before it is defined`); memory access fault at runtime. |
+| Nvidia | Crash | Per spec — copying the container does not attach `values` | No warning; `CUDA_ERROR_ILLEGAL_ADDRESS` at runtime. |
 
 ## Container with "enter data"
 
 ??? note "Code with local variable"
 
     ```fortran
-    program main
-      implicit none
-      type container_type
-          real, dimension(:), allocatable :: values
-      end type
-      real, dimension(:) :: host_mem(2) = (/4,2/), res(2)
-      integer :: i
-
-      type(container_type) :: container
-      !$acc enter data create(container)
-
-      allocate(container%values(2))
-      container%values = host_mem
-
-      write(*,*) "Checking if allocatable values are copied to device after enter data create ..."
-      !$acc parallel loop 
-      do i=1,2 
-        res(i) = container%values(i)
-      enddo
-      write(*,*) "Success", res
-    end program
+    --8<-- "src/enter_data.f90"
     ```
 
-| Compiler | Result | Notes |
-|----------|--------|-------|
-| Cray | Crash | Memory access fault at runtime. |
-| Nvidia | OK | Prints `Success 4.000000 2.000000` (correct). |
+| Compiler | Result | Correctness | Notes |
+|----------|--------|-------------|-------|
+| Cray | Crash | Per spec — `values` is never attached | Memory access fault at runtime. |
+| Nvidia | OK | Not per spec — relies on a non-portable automatic deep copy | Prints `Success 4.000000 2.000000`. |
 
 ??? note "Code with module variable"
-    
+
     ```fortran
-    module static
-      type container_type
-          real, dimension(:), allocatable :: values
-      end type
-
-      type(container_type) :: container
-    end module
-
-    program main
-      use static, only: container
-      implicit none
-
-      real, dimension(:) :: host_mem(2) = (/4,2/), res(2)
-      integer :: i
-
-      !$acc enter data create(container)
-
-      allocate(container%values(2))
-      container%values = host_mem
-
-      write(*,*) "Checking if allocatable values are copied to device after enter data create of a module variable ..."
-      !$acc parallel loop
-      do i=1,2
-        res(i) = container%values(i)
-      enddo
-      write(*,*) "Success", res
-    end program
+    --8<-- "src/enter_data_module.f90"
     ```
 
-| Compiler | Result | Notes |
-|----------|--------|-------|
-| Cray | Crash | Memory access fault at runtime. |
-| Nvidia | Wrong result | Prints `Success 4.000000 0.000000`; the second element should be `2.0`. The module variable case silently produces an incorrect value. |
+| Compiler | Result | Correctness | Notes |
+|----------|--------|-------------|-------|
+| Cray | Crash | Per spec — `values` is never attached | Memory access fault at runtime. |
+| Nvidia | Wrong result | Not per spec — relies on a non-portable automatic deep copy | Prints `Success 4.000000 0.000000`; the second element should be `2.0`. The module variable case silently produces an incorrect value. |
 
 ??? note "Code with enter data for member variable"
 
     ```fortran
-    program main
-      implicit none
-      type container_type
-          real, dimension(:), allocatable :: values
-      end type
-
-      real, dimension(:) :: host_mem(2) = (/4,2/), res(2)
-      integer :: i
-
-      type(container_type) :: container
-      !$acc enter data create(container)
-      !$acc enter data create(container%values)
-
-      allocate(container%values(2))
-      container%values = host_mem
-
-      write(*,*) "Checking if allocatable values are copied to device after enter data create ..."
-      !$acc parallel loop
-      do i=1,2
-        res(i) = container%values(i)
-      enddo
-      write(*,*) "Success", res
-    end program
+    --8<-- "src/enter_data_members.f90"
     ```
 
-| Compiler | Result | Notes |
-|----------|--------|-------|
-| Cray | Crash | Memory access fault at runtime. |
-| Nvidia | OK | Prints `Success 4.000000 2.000000` (correct). |
+| Compiler | Result | Correctness | Notes |
+|----------|--------|-------------|-------|
+| Cray | Crash | Not per spec — the explicit attach of `values` should make this work | Memory access fault at runtime. |
+| Nvidia | OK | Per spec — `values` is explicitly attached | Prints `Success 4.000000 2.000000` (correct). |
 
 ## Container with no data/declare statement
 
 ??? note "Code"
 
-    ``` fortran
-    program main
-      implicit none
-      type pointer_type
-          real, dimension(:), allocatable :: values
-      end type
-      real, dimension(:) :: host_mem(2) = (/4,2/), res(2)
-      integer :: i
-      type(pointer_type) :: indirect
-      allocate(indirect%values(2))
-
-      indirect%values = host_mem
-
-      write(*,*) "Checking if allocatable values are copied to device with !$acc parallel loop ..."
-      !$acc parallel loop
-      do i=1,2 
-        res(i) = indirect%values(i)
-      enddo
-      write(*,*) "Success", res
-
-    end program
+    ```fortran
+    --8<-- "src/type_with_allocatable.f90"
     ```
 
-| Compiler | Result | Notes |
-|----------|--------|-------|
-| Cray | Crash | No warning at compile time; memory access fault at runtime. |
-| Nvidia | OK | Prints `Success 4.000000 2.000000` (correct). |
+| Compiler | Result | Correctness | Notes |
+|----------|--------|-------------|-------|
+| Cray | Crash | Per spec — `values` is never attached | No warning at compile time; memory access fault at runtime. |
+| Nvidia | OK | Not per spec — relies on a non-portable automatic deep copy | Prints `Success 4.000000 2.000000`. |
