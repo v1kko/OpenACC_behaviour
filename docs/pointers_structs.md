@@ -12,7 +12,7 @@ Types with allocatables are handled differently by compilers when using OpenACC.
     dereferencing the pointer in device memory
     ```
 
-In the tables below, the **Correctness** column states whether each compiler's observed behaviour conforms to the OpenACC specification. Because copying a container does not attach its allocatable component, the data is not guaranteed on the device unless `container%values` is explicitly attached. Only the example that does so is expected to work; elsewhere a "correct" output relies on a non-portable automatic deep copy rather than on behaviour the specification mandates.
+In the tables below, the **Correctness** column states whether each compiler's observed behaviour conforms to the OpenACC specification. 
 
 ## Container with "declare create"
 
@@ -59,8 +59,8 @@ In the tables below, the **Correctness** column states whether each compiler's o
 
 | Compiler | Result | Correctness | Notes |
 |----------|--------|-------------|-------|
-| Cray | Crash | Not per spec — the explicit attach of `values` should make this work | Memory access fault at runtime. |
-| Nvidia | OK | Per spec — `values` is explicitly attached | Prints `Success 4.000000 2.000000` (correct). |
+| Cray | OK | Per spec — `values` is allocated, explicitly attached, and copied with `update device` | Prints `Success 4. 2.` (correct). |
+| Nvidia | OK | Per spec — `values` is allocated, explicitly attached, and copied with `update device` | Prints `Success 4.000000 2.000000` (correct). |
 
 ## Container with no data/declare statement
 
