@@ -41,13 +41,10 @@ Types with allocatables are handled differently by compilers when using OpenACC.
     end program
     ```
 
-**Cray**
-
-Gives a compiler warning and crashes at runtime
-
-**Nvidia**
-
-Gives no warning, crashes at runtime
+| Compiler | Result | Notes |
+|----------|--------|-------|
+| Cray | Crash | Compiler warning (`Variable "(?)" is used before it is defined`); memory access fault at runtime. |
+| Nvidia | Crash | No warning; `CUDA_ERROR_ILLEGAL_ADDRESS` at runtime. |
 
 ## Container with "enter data"
 
@@ -76,6 +73,11 @@ Gives no warning, crashes at runtime
       write(*,*) "Success", res
     end program
     ```
+
+| Compiler | Result | Notes |
+|----------|--------|-------|
+| Cray | Crash | Memory access fault at runtime. |
+| Nvidia | OK | Prints `Success 4.000000 2.000000` (correct). |
 
 ??? note "Code with module variable"
     
@@ -109,6 +111,11 @@ Gives no warning, crashes at runtime
     end program
     ```
 
+| Compiler | Result | Notes |
+|----------|--------|-------|
+| Cray | Crash | Memory access fault at runtime. |
+| Nvidia | Wrong result | Prints `Success 4.000000 0.000000`; the second element should be `2.0`. The module variable case silently produces an incorrect value. |
+
 ??? note "Code with enter data for member variable"
 
     ```fortran
@@ -137,13 +144,10 @@ Gives no warning, crashes at runtime
     end program
     ```
 
-**Cray** 
-
-All programgs crash at runtime (Memory access fault)
-
-**Nvidia**
-
-Code works and gives the correct result
+| Compiler | Result | Notes |
+|----------|--------|-------|
+| Cray | Crash | Memory access fault at runtime. |
+| Nvidia | OK | Prints `Success 4.000000 2.000000` (correct). |
 
 ## Container with no data/declare statement
 
@@ -172,10 +176,7 @@ Code works and gives the correct result
     end program
     ```
 
-**Cray**
-
-Does not give a warning, crashes at runtime
-
-**Nvidia**
-
-Code works and gives the correct result
+| Compiler | Result | Notes |
+|----------|--------|-------|
+| Cray | Crash | No warning at compile time; memory access fault at runtime. |
+| Nvidia | OK | Prints `Success 4.000000 2.000000` (correct). |
