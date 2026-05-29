@@ -1,5 +1,4 @@
-Writing and characters in OpenACC subroutines
-==============================
+# Writing characters in OpenACC subroutines
 
 Characters are an aggregate variable according to the OpenACC specification
 
@@ -35,14 +34,14 @@ differences between the compilers, we tested everything with the following progr
     end program
     ```
 
-**Nvidia**
+## Compiler behaviour
 
-Compiles, runs and prints the message
+| Compiler | Result | Correctness | Notes |
+|----------|--------|-------------|-------|
+| Cray Fortran 19.0.0 | ❌ Compile error | Not covered by spec | Characters are not supported at all in device subroutines; the `ftn-7066` error is shown below. |
+| nvfortran 25.3-0 | ✅ OK | Not covered by spec | Compiles, runs and prints the message. |
 
-**Cray**
-
-Doesn't compile, characters are not supported at all in device subroutines.
-The following error is printed:
+The Cray compile error:
 
 
 ???+ note "Code"
