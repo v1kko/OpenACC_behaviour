@@ -24,12 +24,12 @@ Slicing is an important feature, as it can avoid an unnecessary memcopy before t
 
 | Compiler | Result | Correctness | Notes |
 |----------|--------|-------------|-------|
-| Cray Fortran 19.0.0 | ✅ OK | Outside OpenACC spec | `MPICH_GPU_SUPPORT_ENABLED=1`; contiguous buffer is transferred correctly between ranks. |
-| nvfortran 25.3-0 | ✅ OK | Outside OpenACC spec | OpenMPI 5.0.7; contiguous buffer is transferred correctly between ranks. |
+| Cray Fortran 19.0.0 | ✅ OK | Outside OpenACC spec | `MPICH_GPU_SUPPORT_ENABLED=1`; buffer is transferred correctly between ranks. |
+| nvfortran 25.3-0 | ✅ OK | Outside OpenACC spec | OpenMPI 5.0.7; buffer is transferred correctly between ranks. |
 
 ### With slicing
 
 | Compiler | Result | Correctness | Notes |
 |----------|--------|-------------|-------|
-| Cray Fortran 19.0.0 | ✅ OK | Outside OpenACC spec | `MPICH_GPU_SUPPORT_ENABLED=1`; sliced (non-contiguous) buffer is transferred correctly. |
+| Cray Fortran 19.0.0 | ✅ OK | Outside OpenACC spec | `MPICH_GPU_SUPPORT_ENABLED=1`; sliced buffer is transferred correctly. |
 | nvfortran 25.3-0 | 🟡 Wrong result | Outside OpenACC spec | CUDA 12.8, OpenMPI 5.0.7; data mismatch on all 128 elements. |
