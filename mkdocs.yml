@@ -24,3 +24,4 @@ nav:
   - 'Characters in host routines' : characters.md
   - 'Module variable aliasing' : module_double_alloc.md
   - 'GPU-aware MPI probe' : gpu_aware_mpi.md
+  - 'Using `acc_is_present` on a scalar' : acc_is_present_scalar.md

@@ -23,4 +23,5 @@ Every chapter describes a problem and how each compiler handles it.
 | [Module variable aliasing](module_double_alloc.md#compiler-behaviour) | 🟡 Wrong result | ✅ OK | — |
 | [GPU-aware MPI — without slicing](gpu_aware_mpi.md#without-slicing) | ✅ OK | ✅ OK | — |
 | [GPU-aware MPI — with slicing](gpu_aware_mpi.md#with-slicing) | ✅ OK | 🟡 Wrong result | — |
+| [`acc_is_present` on a scalar](acc_is_present_scalar.md#compiler-behaviour) | ✅ OK | ❌ Compile error | ✅ OK |
 
