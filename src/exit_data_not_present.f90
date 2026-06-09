@@ -1,7 +1,7 @@
 program main
   use openacc
   implicit none
-  real, allocatable :: host_mem
+  real :: host_mem
 
   host_mem = 4
   !$acc exit data delete(host_mem)
