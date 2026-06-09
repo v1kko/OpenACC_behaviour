@@ -24,4 +24,6 @@ Every chapter describes a problem and how each compiler handles it.
 | [GPU-aware MPI — without slicing](gpu_aware_mpi.md#without-slicing) | ✅ OK | ✅ OK | — |
 | [GPU-aware MPI — with slicing](gpu_aware_mpi.md#with-slicing) | ✅ OK | 🟡 Wrong result | — |
 | [`acc_is_present` on a scalar](acc_is_present_scalar.md#compiler-behaviour) | ✅ OK | ❌ Compile error | ✅ OK |
+| [`exit data delete` — never present](exit_data_delete.md#exit-data-delete-on-never-present-data) | ❌ Crash | ❌ Crash | ✅ OK |
+| [`exit data delete` — twice](exit_data_delete.md#double-exit-data-delete) | ❌ Crash | ✅ OK | ✅ OK |
 
