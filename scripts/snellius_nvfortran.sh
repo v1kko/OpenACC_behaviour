@@ -2,6 +2,20 @@
 
 CASE=snellius_nvfortran
 
+# Optional: pass case names (source basenames without .f90) to build/run only
+# those. With no arguments, everything is built and run.
+if [ "$#" -gt 0 ]; then
+    BUILD_TARGETS=""
+    RUN_TARGETS=""
+    for c in "$@"; do
+        BUILD_TARGETS="$BUILD_TARGETS \$CASE/$c"
+        RUN_TARGETS="$RUN_TARGETS \$CASE/$c.run"
+    done
+else
+    BUILD_TARGETS=""
+    RUN_TARGETS="run"
+fi
+
 ssh snellius_gpu "
 module load 2025
 module load NVHPC/25.3-CUDA-12.8.0
@@ -16,13 +30,14 @@ git pull
 export COMPILER=\"mpif90 -Wall -acc=gpu -Minfo=all\"
 export CUDA_VISIBLE_DEVICES=\"0,1\"
 export MPI_SUBMIT_COMMAND=\"mpirun -n 2\"
+export UCX_MEMTYPE_CACHE=n
 export CASE=${CASE}
 rm -rf $CASE 
 
 make clean
-make
+make $BUILD_TARGETS
 
-make run
+make $RUN_TARGETS
 
 ls $CASE
 "
