@@ -24,6 +24,8 @@ Every chapter describes a problem and how each compiler handles it.
 | [GPU-aware MPI — without slicing](gpu_aware_mpi.md#without-slicing) | ✅ OK | ✅ OK | — |
 | [GPU-aware MPI — with slicing](gpu_aware_mpi.md#with-slicing) | ✅ OK | 🟡 Wrong result | — |
 | [`acc_is_present` on a scalar](acc_is_present_scalar.md#compiler-behaviour) | ✅ OK | ❌ Compile error | ✅ OK |
+| [`exit data delete` — never present](exit_data_delete.md#exit-data-delete-on-never-present-data) | ❌ Crash | ❌ Crash | ✅ OK |
+| [`exit data delete` — twice](exit_data_delete.md#double-exit-data-delete) | ❌ Crash | ✅ OK | ✅ OK |
 | [Pointer re-attach after host reassociation](attach_detach.md#re-attaching-a-pointer-after-host-reassociation) | 🟡 Wrong result | ✅ OK | ✅ OK |
 | [`detach` of never-attached pointer, then attach](attach_detach.md#detach-on-a-never-attached-pointer) | ✅ OK | ✅ OK | ✅ OK |
 | [Reduction on a composite member](reduction_vars.md#reduction-on-a-member-of-a-composite-variable) | ❌ Compile error | ❌ Compile error | ❌ Compile error |
