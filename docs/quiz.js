@@ -2,6 +2,8 @@
 document$.subscribe(() => {
   const secs = [...document.querySelectorAll(".quiz-section")];
   if (!secs.length) return;
+  // Highlight OpenACC directives (!$acc ...) in red; Pygments gives them the same .c class as plain comments.
+  document.querySelectorAll(".quiz-section .highlight .c").forEach((c) => /^!\$acc/i.test(c.textContent) && (c.style.color = "red"));
   const nq = document.querySelectorAll(".quiz-q").length;
   const OPTS = { ok: "✅ OK", crash: "❌ Compile/runtime crash", wrong: "🟡 Wrong result" };
   const COMPILERS = { cray: "Cray Fortran 19.0.0", nv: "nvfortran 25.3-0" };
