@@ -10,6 +10,8 @@ implement other behaviour for certain cases, such that the same OpenACC pragmas 
 
 Every chapter describes a problem and how each compiler handles it.
 
+Want to test your intuition first? Try the [quiz](quiz.md): guess how each compiler behaves before you see the results.
+
 ## Results overview
 
 | Case | Cray Fortran 19.0.0 | nvfortran 25.3-0 | Expected according to spec |

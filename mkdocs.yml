@@ -13,11 +13,14 @@ markdown_extensions:
   - pymdownx.superfences
   - admonition
   - pymdownx.details
+  - md_in_html
   - pymdownx.tabbed:
       alternate_style: true
 
 theme: 
   name: material
+extra_javascript:
+  - quiz.js
 nav:
   - Introduction: index.md
   - 'Pointers in structs': pointers_structs.md
@@ -28,3 +31,4 @@ nav:
   - 'Using `exit data delete` on absent data' : exit_data_delete.md
   - 'Attaching and detaching pointers' : attach_detach.md
   - 'Reduction variables' : reduction_vars.md
+  - Quiz: quiz.md
